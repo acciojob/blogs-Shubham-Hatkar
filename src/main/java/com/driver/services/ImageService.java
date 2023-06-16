@@ -15,17 +15,38 @@ public class ImageService {
     @Autowired
     ImageRepository imageRepository2;
 
-    public Image addImage(Integer blogId, String description, String dimensions){
+    public Image addImage(Integer blogId, String description, String dimensions)
+    {
         //add an image to the blog
+        Image image = new Image();
+        image.setDescription(description);
+        image.setDimensions(dimensions);
+
+        Blog blog = blogRepository2.findById(blogId).get();
+        image.setBlog(blog);
+
+        blog.getImageList().add(image);
+
+        blogRepository2.save(blog);
+
+        return image;
 
     }
 
-    public void deleteImage(Integer id){
-
+    public void deleteImage(Integer id)
+    {
+        imageRepository2.deleteById(id);
     }
 
-    public int countImagesInScreen(Integer id, String screenDimensions) {
+    public int countImagesInScreen(Integer id, String screenDimensions)
+    {
         //Find the number of images of given dimensions that can fit in a screen having `screenDimensions`
-
+        List<Image> imageList = imageRepository2.findAll();
+        int count = 0;
+        for(Image image : imageList)
+        {
+            if(image.getDimensions().equals(screenDimensions)) count++;
+        }
+        return count;
     }
 }
